@@ -1,2 +1,24 @@
 https://www.printables.com/ 
 https://www.thingiverse.com/#google_vignette
+
+
+
+Dim oSheet As Sheet
+oSheet = ThisDrawing.Document.ActiveSheet
+
+If oSheet.DrawingViews.Count > 0 Then
+    
+    For Each oView As DrawingView In oSheet.DrawingViews
+        oView.IsRasterView = 	True
+    Next
+    For Each oView As DrawingView In oSheet.DrawingViews
+        oView.IsRasterView = False
+    Next
+    For Each oView As DrawingView In oSheet.DrawingViews
+        oView.IsRasterView = 	True
+    Next
+    For Each oView As DrawingView In oSheet.DrawingViews
+        oView.IsRasterView = False
+    Next	
+	
+End If
