@@ -1,0 +1,44 @@
+' Valida se o documento é um desenho
+If ThisApplication.ActiveDocument.DocumentType <> DocumentTypeEnum.kDrawingDocumentObject Then
+    System.Windows.Forms.MessageBox.Show("Este script só pode ser executado em arquivos de desenho (.idw ou .dwg).", _
+    "Documento inválido", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning)
+    Return
+End If
+
+Dim oDoc As DrawingDocument = ThisApplication.ActiveDocument
+Dim continuar As Boolean = True
+
+Do While continuar
+    ' Solicita ao usuário que selecione uma vista em qualquer folha
+    Dim oView As DrawingView
+    Try
+        oView = ThisApplication.CommandManager.Pick(SelectionFilterEnum.kDrawingViewFilter, _
+            "Selecione uma vista de qualquer folha do desenho")
+    Catch ex As Exception
+        System.Windows.Forms.MessageBox.Show("Nenhuma vista foi selecionada.", "Cancelado", _
+        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information)
+        Exit Do
+    End Try
+
+    ' Atualiza ou força atualização da vista
+    If oView.IsRasterView Then
+        oView.IsRasterView = False
+        System.Windows.Forms.MessageBox.Show("A vista '" & oView.Name & "' foi convertida para precisa." & vbCrLf & _
+        "Folha: " & oView.Parent.Name, "Vista atualizada", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information)
+    Else
+        oView.IsRasterView = True
+        oView.IsRasterView = False
+        System.Windows.Forms.MessageBox.Show("A vista '" & oView.Name & "' já era precisa. Atualização forçada com sucesso." & vbCrLf & _
+        "Folha: " & oView.Parent.Name, "Vista atualizada", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information)
+    End If
+
+    ' Pergunta ao usuário se deseja continuar
+    Dim resposta As System.Windows.Forms.DialogResult
+    resposta = System.Windows.Forms.MessageBox.Show("Deseja atualizar outra vista (em qualquer folha)?", "Continuar?", _
+        System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question)
+
+    If resposta = System.Windows.Forms.DialogResult.No Then
+        continuar = False
+    End If
+
+Loop
